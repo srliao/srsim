@@ -7,8 +7,10 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/go-chi/chi"
 	"github.com/simimpact/srsim/pkg/engine/logging"
@@ -22,6 +24,8 @@ func (s *Server) sample() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
+				s.Log.Warn("panic encountered running sample", "err", r)
+				fmt.Println(string(debug.Stack()))
 				w.Write([]byte(errorRecover(r).Error()))
 				w.WriteHeader(http.StatusBadRequest)
 			}

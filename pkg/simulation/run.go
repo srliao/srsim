@@ -36,8 +36,6 @@ func initialize(sim *Simulation) (stateFn, error) {
 		}
 	}
 
-	sim.initStatCollection()
-
 	// want to emit after all hooks in the event that they subscribe to these
 	sim.Event.Initialize.Emit(event.Initialize{
 		Config: sim.cfg,
@@ -73,6 +71,9 @@ func initialize(sim *Simulation) (stateFn, error) {
 	if err := sim.eval.Init(sim); err != nil {
 		return nil, err
 	}
+
+	// init stat collection last
+	sim.initStatCollection()
 
 	return startBattle, nil
 }

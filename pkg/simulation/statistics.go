@@ -19,6 +19,13 @@ func (sim *Simulation) initStatCollection() {
 		TotalAv:                      0,
 		CumulativeDamageDealtByCycle: make([]float64, 1, cycleLimit),
 		CumulativeDamageTakenByCycle: make([]float64, 1, cycleLimit),
+		CharacterDetails:             make(map[int32]*model.CharacterIterationResult),
+	}
+
+	for _, v := range sim.characters {
+		sim.res.CharacterDetails[int32(v)] = &model.CharacterIterationResult{
+			DamageDealtByAv: make(map[int32]float64),
+		}
 	}
 
 	// collect total damage
@@ -33,6 +40,14 @@ func (sim *Simulation) initStatCollection() {
 			sim.res.TotalDamageTaken += event.TotalDamage
 		case info.ClassEnemy:
 			sim.res.TotalDamageDealt += event.TotalDamage
+			// track damage dealt by character
+			// apply ceil to total av to bin it into integer blocks
+			currentAV := int32(math.Ceil(sim.Turn.TotalAV()))
+			d := sim.res.CharacterDetails[int32(event.Attacker)]
+			if d.DamageDealtByAv == nil {
+				d.DamageDealtByAv = make(map[int32]float64)
+			}
+			d.DamageDealtByAv[currentAV] += event.TotalDamage
 		}
 		// split up total damage by cycle buckets
 		cycle := int(math.Ceil(sim.Turn.TotalAV()/100)) - 1

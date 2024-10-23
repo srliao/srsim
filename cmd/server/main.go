@@ -9,6 +9,7 @@ import (
 
 	"github.com/simimpact/srsim/pkg/servermode"
 	// gotta manually import stats agg since im not using the nicer srsim executable
+	_ "github.com/simimpact/srsim/pkg/statistics/agg/damage"
 	_ "github.com/simimpact/srsim/pkg/statistics/agg/overview"
 )
 

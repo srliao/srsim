@@ -2,8 +2,10 @@ package servermode
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"math/rand"
+	"runtime/debug"
 
 	"github.com/simimpact/srsim/pkg/logic/gcs"
 	"github.com/simimpact/srsim/pkg/logic/gcs/eval"
@@ -42,6 +44,8 @@ func (w *workerpool) run(iterations, workerCount, flushInterval int) {
 	// handle panic
 	defer func() {
 		if r := recover(); r != nil {
+			w.log.Warn("panic encountered running sims", "err", r)
+			fmt.Println(string(debug.Stack()))
 			w.handleErr(errorRecover(r))
 		}
 	}()
